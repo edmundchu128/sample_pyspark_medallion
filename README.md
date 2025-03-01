@@ -26,9 +26,7 @@ The `task_stratostech` repository contains a data pipeline project designed to p
 - For 2024, AVGO has had the greatest decrease in value within a single week on Week number 51 of 2024 (2024-12-16 to 2024-12-20) with -2746.15 decrease in value.
 
 ### Output files
-The output of gold layer containing the answers for the questions are in ./buckets/gold. They are written by the Pyspark engine and the data can be inspected by going into each csv part of the folder.
-
-i.e. buckets/gold/d.MAX_DECREASE_2024.csv/part-00000-fdbad8f7-da9f-4d0b-9afb-60df14ff357b-c000.csv
+The output of gold layer containing the answers for the questions are in ./buckets/gold. They are written by the Pyspark engine and the data can be inspected by going into each csv part of the folder for pyspark read. For ease, I have copied the dataset into ./buckets/gold/ouputs. The `consolidated.zip` file contains the answers to the above questions in separate`2023-consolidated.csv` and `2024-consolidated.csv` files.
 
 ----
 ## Details of the pipeline
