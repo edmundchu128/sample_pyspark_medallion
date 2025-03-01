@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # task_stratostech
 
 ## Overview
@@ -96,3 +97,8 @@ The Gold Pipeline generates insights from the refined data in the Silver Pipelin
 ----
 Please contact Edmund Chu at edmundchu128@gmail.com for any queries.
 Thanks for exploring this respository.
+=======
+This repository contains the take-home task for Stratos Tech. 
+
+It includes the task description, repository structure and scripts to generate outputs.
+>>>>>>> 1857856f750161b41b774ded34fc0ae5f06a1527
