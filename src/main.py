@@ -91,6 +91,10 @@ def main(run_bronze: bool, run_silver: bool, run_gold: bool):
             # d. During the year, which stock had the greatest decrease in value within a single week and which week was this?
             pipeline.get_max_decrease_by_week(df, ("2024-01-01", "2024-12-31")).coalesce(1).write.mode("overwrite").csv("../buckets/gold/d.MAX_DECREASE_2024.csv", header=True)
             pipeline.get_max_decrease_by_week(df, ("2023-01-01", "2023-12-31")).coalesce(1).write.mode("overwrite").csv("../buckets/gold/d.MAX_DECREASE_2023.csv", header=True)
+
+            # Consolidate insights and output into one table
+            pipeline.consolidate_insights(df, ("2023-01-01", "2023-12-31")).coalesce(1).write.mode("overwrite").csv("../buckets/gold/2023_consolidated.csv", header=True)
+            pipeline.consolidate_insights(df, ("2024-01-01", "2024-12-31")).coalesce(1).write.mode("overwrite").csv("../buckets/gold/2024_consolidated.csv", header=True)
         except Exception as e:
             logging.error("Error in GoldPipeline: %s", e)
         finally:

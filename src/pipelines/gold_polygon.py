@@ -63,32 +63,32 @@ class GoldPipeline:
         df = self.spark.read.parquet(path, header=True)
         return df
 
-    def get_max_relative_increase_by_year(self, df: DataFrame, date_filter: tuple) -> DataFrame:
-        """
-        Get the stock with the maximum relative increase in price by year. Use this function with date_filter across years.
+    # def get_max_relative_increase_by_year(self, df: DataFrame, date_filter: tuple) -> DataFrame:
+    #     """
+    #     Get the stock with the maximum relative increase in price by year. Use this function with date_filter across years.
         
-        Args:
-            df (DataFrame): The input DataFrame.
-            date_filter (tuple): A tuple containing the start and end dates for filtering.
+    #     Args:
+    #         df (DataFrame): The input DataFrame.
+    #         date_filter (tuple): A tuple containing the start and end dates for filtering.
         
-        Returns:
-            DataFrame: The DataFrame containing the stock with the maximum relative increase by year.
-        """
-        ### Read files and filter based on date filter
-        df_agg = df.filter(F.col('date').between(date_filter[0], date_filter[1]))
-        ticker_window_spec = Window.partitionBy(["ticker", "year"])
-        df_agg = df_agg.withColumn("year", F.year("date")) \
-                       .withColumn("first_close", F.first("close").over(ticker_window_spec)) \
-                       .withColumn("last_close", F.last("close").over(ticker_window_spec))
+    #     Returns:
+    #         DataFrame: The DataFrame containing the stock with the maximum relative increase by year.
+    #     """
+    #     ### Read files and filter based on date filter
+    #     df_agg = df.filter(F.col('date').between(date_filter[0], date_filter[1]))
+    #     ticker_window_spec = Window.partitionBy(["ticker", "year"])
+    #     df_agg = df_agg.withColumn("year", F.year("date")) \
+    #                    .withColumn("first_close", F.first("close").over(ticker_window_spec)) \
+    #                    .withColumn("last_close", F.last("close").over(ticker_window_spec))
         
-        ### Calculate the net change for each ticker
-        df_agg = df_agg.select("ticker"
-                               , "year"
-                               , "first_close"
-                               , "last_close"
-                               , ((F.col("last_close") - F.col("first_close")) / F.col("first_close")).alias("net_change")).distinct()
-        df_agg = df_agg.orderBy(F.desc("net_change"))
-        return df_agg
+    #     ### Calculate the net change for each ticker
+    #     df_agg = df_agg.select("ticker"
+    #                            , "year"
+    #                            , "first_close"
+    #                            , "last_close"
+    #                            , ((F.col("last_close") - F.col("first_close")) / F.col("first_close")).alias("net_change")).distinct()
+    #     df_agg = df_agg.orderBy(F.desc("net_change"))
+    #     return df_agg
 
     def get_max_relative_increase(self, df: DataFrame, date_filter: tuple) -> DataFrame:
         """
@@ -218,6 +218,7 @@ class GoldPipeline:
         ### Calculate the net change for each week
         df_agg = df_agg.select("ticker"
                                , "date"
+                               , "year"
                                , "weeknum"
                                , "week_last_value"
                                , "week_first_value"
@@ -226,6 +227,34 @@ class GoldPipeline:
         ### Get the maximum decrease/lowest increase in value within a single week
         df_agg = df_agg.orderBy(F.asc("net_change")).limit(10)
         return df_agg
+    
+    def consolidate_insights(self, df: DataFrame, date_filter: tuple, initial_investment=1000000) -> DataFrame:
+        """
+        Consolidate the insights into a single DataFrame.
+
+        Args:
+            df (DataFrame): The input DataFrame.
+            date_filter (tuple): A tuple containing the start and end dates for filtering.
+            initial_investment (int, optional): The initial investment amount. Defaults to 1000000.
+        
+        Returns:
+            DataFrame: The DataFrame containing the stock with the maximum decrease in value within a single week.
+        """
+        df_max_relative_increase = self.get_max_relative_increase(df, date_filter)
+        df_investment_return = self.get_investment_return(df, date_filter, initial_investment)
+        df_max_CAGR_ticker = self.get_max_CAGR_ticker(df, date_filter, initial_investment)
+        df_max_decrease_by_week = self.get_max_decrease_by_week(df, date_filter, initial_investment)
+        
+        val_max_relative_increase = df_max_relative_increase.select(F.col("ticker")).collect()[0][0]
+        val_investment_return = df_investment_return.select(F.col("investment_value")).collect()[0][0]
+        val_max_CAGR_ticker = df_max_CAGR_ticker.select(F.col("ticker")).collect()[0][0]
+        max_decrease_by_week_ticker = df_max_decrease_by_week.select(F.col("ticker")).collect()[0][0]
+        max_decrease_by_week_weeknum = df_max_decrease_by_week.select(F.concat(F.col("year"),F.lit("-"),F.col("weeknum"))).collect()[0][0]
+        
+        df_output = self.spark.createDataFrame([(val_max_relative_increase, val_investment_return, val_max_CAGR_ticker, max_decrease_by_week_ticker,max_decrease_by_week_weeknum)], 
+                                               schema=["max_relative_increase_ticker", "investment_return_by_end_of_year", "max_CAGR_ticker_jan_june", "max_decrease_by_week_ticker","max_decrease_by_week_weeknum"])
+
+        return df_output
 
 if __name__ == "__main__":
 
@@ -251,3 +280,6 @@ if __name__ == "__main__":
     # d. During the year, which stock had the greatest decrease in value within a single week and which week was this?
     pipeline.get_max_decrease_by_week(df, ("2024-01-01", "2024-12-31")).coalesce(1).write.mode("overwrite").csv("../buckets/gold/d.MAX_DECREASE_2024.csv", header=True)
     pipeline.get_max_decrease_by_week(df, ("2023-01-01", "2023-12-31")).coalesce(1).write.mode("overwrite").csv("../buckets/gold/d.MAX_DECREASE_2023.csv", header=True)
+
+    pipeline.consolidate_insights(df, ("2023-01-01", "2023-12-31")).coalesce(1).write.mode("overwrite").csv("../buckets/gold/2023_consolidated.csv", header=True)
+    pipeline.consolidate_insights(df, ("2024-01-01", "2024-12-31")).coalesce(1).write.mode("overwrite").csv("../buckets/gold/2024_consolidated.csv", header=True)
