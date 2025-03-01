@@ -6,7 +6,7 @@ The `task_stratostech` repository contains a data pipeline project designed to p
 
 **\*\*Due to API restriction for the free tier, the data obtained from the API dates back to 2 years ago ONLY. From the start of development (2025-03-01), the earliest data is from 2023-03-01. The pipeline will produce two datasets per question, 2023 dataset and 2024 dataset.**
 
-
+---
 ### Answers to the questions:
 a. Which stock has had the greatest relative increase in price in this period?
 For 2023, NVDA has had the greatest relative increase in price in this period with +112.4% increase from $23.324 to $49.522
