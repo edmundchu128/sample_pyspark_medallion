@@ -9,21 +9,21 @@ The `task_stratostech` repository contains a data pipeline project designed to p
 ---
 ### Answers to the questions:
 *a. Which stock has had the greatest relative increase in price in this period?*
-For 2023, NVDA has had the greatest relative increase in price in this period with +112.4% increase from $23.324 to $49.522
-For 2024, NVDA has had the greatest relative increase in price in this period with +178.8% increase from $48.168 to $134.290
+- For 2023, NVDA has had the greatest relative increase in price in this period with +112.4% increase from \$23.324 to \$49.522
+- For 2024, NVDA has had the greatest relative increase in price in this period with +178.8% increase from \$48.168 to \$134.290
 
 *b. If you had invested \$1 million at the beginning of this period by purchasing \$10,000 worth of shares in every company in the list equally, how much would you have today? Technical note, you can assume that it is possible to purchase fractional shares?*
-For 2023, if \$10,000 was invested at the beginning of the period, \$1 million will become \$1,160,702 by the end of 2023.
+- For 2023, if \$10,000 was invested at the beginning of the period, \$1 million will become \$1,160,702 by the end of 2023.
 
-For 2024 if \$10,000 was invested at the beginning of the period, \$1 million will become \$1,163,413 by the end of 2023.
+- For 2024 if \$10,000 was invested at the beginning of the period, \$1 million will become \$1,163,413 by the end of 2023.
 
 *c. Which stock had the greatest value in monthly CAGR between January and June?*
-For 2023, NVDA has had the greatst value in monthly CAGR between January and June with CAGR of 26171.2%
-For 2024, NVDA has had the greatest value in monthly CAGR between January and June with CAGR of 18514.8%
+- For 2023, NVDA has had the greatst value in monthly CAGR between January and June with CAGR of 26171.2%
+- For 2024, NVDA has had the greatest value in monthly CAGR between January and June with CAGR of 18514.8%
 
 *d. During the year, which stock had the greatest decrease in value within a single week and which week was this?*
-For 2023, SCHW has had the greatest decrease in value within a single week on Week number 10 of 2023 (2023-03-06 to 2023-03-10) with -2400.49 decrease in value.
-For 2024, AVGO has had the greatest decrease in value within a single week on Week number 51 of 2024 (2024-12-16 to 2024-12-20) with -2746.15 decrease in value.
+- For 2023, SCHW has had the greatest decrease in value within a single week on Week number 10 of 2023 (2023-03-06 to 2023-03-10) with -2400.49 decrease in value.
+- For 2024, AVGO has had the greatest decrease in value within a single week on Week number 51 of 2024 (2024-12-16 to 2024-12-20) with -2746.15 decrease in value.
 
 ### Output files
 The output of gold layer containing the answers for the questions are in ./buckets/gold. They are written by the Pyspark engine and the data can be inspected by going into each csv part of the folder.
@@ -43,8 +43,8 @@ i.e. buckets/gold/d.MAX_DECREASE_2024.csv/part-00000-fdbad8f7-da9f-4d0b-9afb-60d
 
 Activate spark in WSL:
 ```
-${SPARK_HOME}/sbin/start-master.sh
-${SPARK_HOME}/sbin/start-worker.sh spark://ubuntu1:7077
+\${SPARK_HOME}/sbin/start-master.sh
+\${SPARK_HOME}/sbin/start-worker.sh spark://ubuntu1:7077
 ```
 Install required packages:
 ```
@@ -85,7 +85,7 @@ The Gold Pipeline generates insights from the refined data in the Silver Pipelin
 - Reading the refined data from the silver bucket.
 - Calculating various metrics and insights, such as:
   - The stock with the greatest relative increase in price.
-  - The investment return if $1 million was invested equally in all stocks.
+  - The investment return if \$1 million was invested equally in all stocks.
   - The stock with the greatest Compound Annual Growth Rate (CAGR) between January and June.
   - The stock with the greatest decrease in value within a single week.
 - Storing the generated insights in a gold bucket.
