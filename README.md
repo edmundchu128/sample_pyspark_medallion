@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # task_stratostech
 
 ## Overview
