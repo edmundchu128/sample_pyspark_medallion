@@ -65,7 +65,7 @@ class GoldPipeline:
 
     def get_max_relative_increase_by_year(self, df: DataFrame, date_filter: tuple) -> DataFrame:
         """
-        Get the stock with the maximum relative increase in price by year.
+        Get the stock with the maximum relative increase in price by year. Use this function with date_filter across years.
         
         Args:
             df (DataFrame): The input DataFrame.
@@ -74,12 +74,14 @@ class GoldPipeline:
         Returns:
             DataFrame: The DataFrame containing the stock with the maximum relative increase by year.
         """
+        ### Read files and filter based on date filter
         df_agg = df.filter(F.col('date').between(date_filter[0], date_filter[1]))
         ticker_window_spec = Window.partitionBy(["ticker", "year"])
         df_agg = df_agg.withColumn("year", F.year("date")) \
                        .withColumn("first_close", F.first("close").over(ticker_window_spec)) \
                        .withColumn("last_close", F.last("close").over(ticker_window_spec))
         
+        ### Calculate the net change for each ticker
         df_agg = df_agg.select("ticker"
                                , "year"
                                , "first_close"
@@ -99,11 +101,13 @@ class GoldPipeline:
         Returns:
             DataFrame: The DataFrame containing the stock with the maximum relative increase.
         """
+        ### Read files and filter based on date filter
         df_agg = df.filter(F.col('date').between(date_filter[0], date_filter[1]))
         ticker_window_spec = Window.partitionBy(["ticker"])
         df_agg = df_agg.withColumn("first_close", F.first("close").over(ticker_window_spec)) \
                        .withColumn("last_close", F.last("close").over(ticker_window_spec))
         
+        ### Calculate the net change for each ticker
         df_agg = df_agg.select("ticker"
                                , "first_close"
                                , "last_close"

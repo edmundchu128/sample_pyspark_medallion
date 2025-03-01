@@ -57,6 +57,7 @@ class SilverPipeline:
             bool: True if the schema matches, False otherwise.
         """
 
+        ### Check if the schema of the DataFrame matches the expected schema
         if df.schema != expected_schema:
             logging.error("Schema validation failed.")
             logging.error("Expected schema: %s", expected_schema.simpleString())
@@ -66,7 +67,8 @@ class SilverPipeline:
                     logging.error("Field mismatch: Expected field %s, Actual field %s", expected_field, actual_field)
             raise AssertionError("Schema validation failed. The transformed data does not match the expected schema.")
         
-        
+        ### If the schema matches, log the schema and return True
+        logging.info("Schema validation passed.")
         assert df.schema == expected_schema
 
     @staticmethod
@@ -81,6 +83,8 @@ class SilverPipeline:
         Returns:
             bool: True if there are no duplicate primary keys, False otherwise.
         """
+
+        ### Check for duplicate primary keys
         duplicate_count = df.groupBy(primary_key_columns).count().filter(F.col("count") > 1).count()
         if duplicate_count > 0:
             logging.error("Primary key validation failed. Found %d duplicate rows for primary key columns: %s", duplicate_count, primary_key_columns)
@@ -129,6 +133,7 @@ class SilverPipeline:
         ### Validate schema and primary key before writing to silver if passed
         try:
             self.validate_schema(stocks_df, self.EXPECTED_SCHEMA)
+            ### ticker+date is the primary key
             self.validate_primary_key(stocks_df, ["date", "ticker"])
             logging.info(f"Schema validation passed. Writing silver data to {output_file_path}.")
             stocks_df.write.mode("overwrite").parquet(output_file_path)

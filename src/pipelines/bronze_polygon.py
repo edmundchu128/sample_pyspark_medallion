@@ -61,6 +61,7 @@ class BronzePipeline:
         Raises:
             Exception: If the DataFrame is empty or any other error occurs.
         """
+        ### Read the list of stocks from the CSV file and return a list of stock symbols
         try:
             stocks_df = self.spark.read.csv(path, header=True)
             if not stocks_df.head(1):
@@ -72,6 +73,7 @@ class BronzePipeline:
             logging.error(str(e))
             raise Exception(str(e))
 
+    ### Retry decorator to handle rate limit with wait time (4s, 8s, 16s, 32s, 60s)
     @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=4, min=4, max=60), retry=retry_if_exception_type(requests.exceptions.RequestException))
     def get_request(self, url, params):
         """
@@ -115,14 +117,20 @@ class BronzePipeline:
         Returns:
             str: The dataset retrieved from the API.
         """
+
+        ### Build the URL and parameters for the API request
         url = f"{self.POLYGON_BASE_URL}/aggs/ticker/{ticker}/range/{multiplier}/{timespan}/{start_date}/{end_date}"
         params = {"apiKey": API_KEY}
+
+        ### Call the get_request method to retrieve the data with retries
         dataset = self.get_request(url, params).json()
-        
+    
+        ### Make sure the output directory exists
         output_dir = f"../buckets/bronze/{start_date}_{end_date}"
         os.makedirs(os.path.dirname(output_dir + '/'), exist_ok=True)
         output_path = f"{output_dir}/{ticker}_{int(time.time())}.json"
         
+        ### Write the dataset to a JSON file
         with open(output_path, "w") as f:
             json.dump(dataset, f)
         
