@@ -1,8 +1,8 @@
-# task_stratostech
+# Sample Pyspark Medallion
 
 ## Overview
 
-The `task_stratostech` repository contains a data pipeline project designed to process stock market data from the Polygon.io API. The pipeline consists of three stages: Bronze, Silver, and Gold. Each pipeline will write to the buckets folder for this exercise.
+This repository contains a data pipeline project designed to process stock market data from the Polygon.io API. The pipeline consists of three stages: Bronze, Silver, and Gold. Each pipeline will write to the buckets folder for this exercise.
 
 **\*\*Due to API restriction for the free tier, the data obtained from the API dates back to 2 years ago ONLY. From the start of development (2025-03-01), the earliest data is from 2023-03-01. The pipeline will produce two datasets per question, 2023 dataset and 2024 dataset.**
 
@@ -33,7 +33,7 @@ The output of gold layer containing the answers for the questions are in ./bucke
 ### Pre-requisites
 1. Pyspark 3.5.5 installed in WSL environment
 2. Scala 2.13.3 installed in WSL environment
-3. stocks.csv provided by Stratos in the seeds folder. You will have to put the file inside the seeds folder. (i.e. seeds/stocks.csv)
+3. stocks.csv consists a list of stocks in the seeds folder. You will have to put the file inside the seeds folder. (i.e. seeds/stocks.csv)
 
 ## How to run the pipeline:
 
